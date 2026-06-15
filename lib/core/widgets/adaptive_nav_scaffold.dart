@@ -37,6 +37,7 @@ class AdaptiveNavScaffold extends StatelessWidget {
     required this.onDestinationSelected,
     required this.body,
     this.actions = const [],
+    this.leading,
   });
 
   final String title;
@@ -46,12 +47,20 @@ class AdaptiveNavScaffold extends StatelessWidget {
   final Widget body;
   final List<Widget> actions;
 
+  /// Optional app-bar leading — typically the DCPL [BrandMark]. Sized to the
+  /// AppBar's default leading width.
+  final Widget? leading;
+
   @override
   Widget build(BuildContext context) {
     final compact = context.isCompact;
 
     return Scaffold(
-      appBar: AppBar(title: Text(title), actions: actions),
+      appBar: AppBar(
+        leading: leading,
+        title: Text(title),
+        actions: actions,
+      ),
       body: compact
           ? body
           : Row(

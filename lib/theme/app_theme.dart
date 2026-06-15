@@ -1,24 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'app_palette.dart';
 import 'status_colors.dart';
 
-/// The DCPL design system — "Blueprint Slate".
+/// The DCPL design system — "Molten".
 ///
-/// A hand-authored Material 3 light theme (no raw `fromSeed`): the brand
-/// anchors are pinned explicitly from [AppPalette] so chips, surfaces and
-/// hairlines stay crisp and on-brand rather than muddy generated tones. The
-/// semantic [StatusColors] palette is attached as a theme extension. Both apps
-/// consume `AppTheme.light`; nothing app-specific lives here.
+/// A hand-authored Material 3 light theme (no raw `fromSeed`): a disciplined
+/// graphite-on-paper foundation (the "cold steel" — `primary` stays graphite so
+/// dense tables read effortlessly) lit by the brand's **crimson** accent
+/// (`tertiary`), the solid stand-in for the Molten gradient (see
+/// `BrandGradient`). Brand anchors are pinned explicitly from [AppPalette] so
+/// chips, surfaces and hairlines stay crisp rather than muddy generated tones.
+/// Typography is **Sora** (display/titles) over **Inter** (body/data) via
+/// `google_fonts`. The semantic [StatusColors] palette is attached as a theme
+/// extension and is deliberately NOT a brand colour. Both apps consume
+/// `AppTheme.light`; nothing app-specific lives here.
 abstract final class AppTheme {
   static ThemeData get light {
     final base = ThemeData(useMaterial3: true, colorScheme: _scheme);
     final scheme = _scheme;
+    final text = _buildTextTheme(base.textTheme);
 
     return base.copyWith(
       scaffoldBackgroundColor: scheme.surface,
       extensions: const [StatusColors.standard],
-      textTheme: _refine(base.textTheme),
+      textTheme: text,
 
       // Flat "drafting" app bar: surface-coloured, hairline under-scroll.
       appBarTheme: AppBarTheme(
@@ -28,16 +35,17 @@ abstract final class AppTheme {
         elevation: 0,
         scrolledUnderElevation: 0.5,
         centerTitle: false,
-        titleTextStyle: _refine(base.textTheme).titleLarge,
+        titleTextStyle: text.titleLarge,
       ),
 
-      // Outlined inputs — drafting-precise, 10px corners, accent focus ring.
+      // Outlined inputs — drafting-precise, 10px corners, brand (crimson) focus
+      // ring: the one place the Molten accent touches a form field.
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: scheme.surfaceContainerLowest,
         border: _inputBorder(scheme.outlineVariant),
         enabledBorder: _inputBorder(scheme.outlineVariant),
-        focusedBorder: _inputBorder(scheme.primary, width: 1.6),
+        focusedBorder: _inputBorder(scheme.tertiary, width: 1.6),
         errorBorder: _inputBorder(scheme.error),
         focusedErrorBorder: _inputBorder(scheme.error, width: 1.6),
         isDense: true,
@@ -82,9 +90,7 @@ abstract final class AppTheme {
         side: BorderSide.none,
         shape:
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        labelStyle: _refine(base.textTheme)
-            .labelMedium
-            ?.copyWith(fontWeight: FontWeight.w600),
+        labelStyle: text.labelMedium?.copyWith(fontWeight: FontWeight.w600),
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       ),
 
@@ -108,7 +114,7 @@ abstract final class AppTheme {
         unselectedLabelTextStyle: TextStyle(color: scheme.onSurfaceVariant),
       ),
 
-      // Bottom bar (compact / phones) — same brass pill as the rail.
+      // Bottom bar (compact / phones) — same soft-crimson pill as the rail.
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: scheme.surface,
         indicatorColor: scheme.tertiaryContainer,
@@ -136,12 +142,12 @@ abstract final class AppTheme {
       dataTableTheme: DataTableThemeData(
         headingRowColor:
             WidgetStatePropertyAll(scheme.surfaceContainerLow),
-        headingTextStyle: _refine(base.textTheme).labelLarge?.copyWith(
+        headingTextStyle: text.labelLarge?.copyWith(
               fontWeight: FontWeight.w700,
               color: scheme.onSurfaceVariant,
               letterSpacing: 0.2,
             ),
-        dataTextStyle: _refine(base.textTheme).bodyMedium,
+        dataTextStyle: text.bodyMedium,
         dividerThickness: 1,
       ),
 
@@ -155,64 +161,99 @@ abstract final class AppTheme {
     );
   }
 
-  // --- Hand-authored Material 3 light scheme (Steel & Timber) ---------------
-  static const ColorScheme _scheme = ColorScheme(
+  // --- Hand-authored Material 3 light scheme (Molten) -----------------------
+  // Graphite foundation (primary = steel) + crimson brand accent (tertiary).
+  // `final`, not `const`: MaterialColor shade access (`.shade800`) is a runtime
+  // getter, so the scheme is built once at first use rather than at compile time.
+  static final ColorScheme _scheme = ColorScheme(
     brightness: Brightness.light,
 
-    primary: AppPalette.steel800, // graphite
+    primary: AppPalette.steel.shade800, // graphite
     onPrimary: AppPalette.white,
-    primaryContainer: Color(0xFFDBE0E4),
-    onPrimaryContainer: Color(0xFF1B2024),
+    primaryContainer: const Color(0xFFDBE0E4),
+    onPrimaryContainer: const Color(0xFF1B2024),
 
-    secondary: AppPalette.steel600, // steel blue-grey
+    secondary: AppPalette.steel.shade600, // steel blue-grey
     onSecondary: AppPalette.white,
-    secondaryContainer: Color(0xFFD6DEE2),
-    onSecondaryContainer: Color(0xFF1A2429),
+    secondaryContainer: const Color(0xFFD6DEE2),
+    onSecondaryContainer: const Color(0xFF1A2429),
 
-    tertiary: AppPalette.brass700, // brass that carries white text
+    tertiary: AppPalette.crimson.shade700, // crimson that carries white text
     onTertiary: AppPalette.white,
-    tertiaryContainer: AppPalette.brass100,
-    onTertiaryContainer: Color(0xFF4A330C),
+    tertiaryContainer: AppPalette.crimson.shade50, // soft molten nav pill
+    onTertiaryContainer: AppPalette.crimson.shade900,
 
     error: AppPalette.red,
     onError: AppPalette.white,
     errorContainer: AppPalette.redSurface,
-    onErrorContainer: Color(0xFF5A130C),
+    onErrorContainer: const Color(0xFF5A130C),
 
-    surface: Color(0xFFF6F7F9),
-    onSurface: Color(0xFF1E2227),
-    onSurfaceVariant: Color(0xFF454F57),
+    surface: const Color(0xFFF6F7F9),
+    onSurface: const Color(0xFF1E2227),
+    onSurfaceVariant: const Color(0xFF454F57),
     surfaceContainerLowest: AppPalette.white,
-    surfaceContainerLow: Color(0xFFF1F3F5),
-    surfaceContainer: Color(0xFFEBEEF1),
-    surfaceContainerHigh: Color(0xFFE5E9EC),
-    surfaceContainerHighest: Color(0xFFDFE3E7),
+    surfaceContainerLow: const Color(0xFFF1F3F5),
+    surfaceContainer: const Color(0xFFEBEEF1),
+    surfaceContainerHigh: const Color(0xFFE5E9EC),
+    surfaceContainerHighest: const Color(0xFFDFE3E7),
 
-    outline: Color(0xFF717A80),
-    outlineVariant: AppPalette.steel200,
+    outline: const Color(0xFF717A80),
+    outlineVariant: AppPalette.steel.shade200,
 
-    inverseSurface: AppPalette.steel800,
-    onInverseSurface: Color(0xFFEEF1F3),
-    inversePrimary: Color(0xFFB6C2C9),
+    inverseSurface: AppPalette.steel.shade800,
+    onInverseSurface: const Color(0xFFEEF1F3),
+    inversePrimary: const Color(0xFFB6C2C9),
 
-    shadow: Color(0xFF000000),
-    scrim: Color(0xFF000000),
-    surfaceTint: AppPalette.steel800,
+    shadow: const Color(0xFF000000),
+    scrim: const Color(0xFF000000),
+    surfaceTint: AppPalette.steel.shade800,
   );
 
-  // --- Typography: keep Material's defaults, add engineering crispness ------
-  // (Headings a touch tighter and heavier; labels slightly tracked-out for the
-  // technical feel. A custom typeface can drop in here later without touching
-  // any screen.)
-  static TextTheme _refine(TextTheme base) => base.copyWith(
-        headlineSmall: base.headlineSmall
-            ?.copyWith(fontWeight: FontWeight.w600, letterSpacing: -0.2),
-        titleLarge: base.titleLarge
-            ?.copyWith(fontWeight: FontWeight.w600, letterSpacing: -0.1),
-        titleMedium: base.titleMedium?.copyWith(fontWeight: FontWeight.w600),
-        labelLarge: base.labelLarge
-            ?.copyWith(fontWeight: FontWeight.w600, letterSpacing: 0.1),
-      );
+  // --- Typography: Sora (display/titles) over Inter (body/data) -------------
+  // Inter carries everything legibility-critical (body, labels, numerics); Sora
+  // gives display & title sizes the engineered, geometric voice of the logo.
+  // Both ship via `google_fonts`, so no font assets to bundle.
+  static TextTheme _buildTextTheme(TextTheme base) {
+    final inter = GoogleFonts.interTextTheme(base);
+
+    // Sora slot: preserve the themed colour from [s], override the metrics.
+    TextStyle sora(
+      TextStyle? s, {
+      required double size,
+      required FontWeight weight,
+      double tracking = 0,
+      double height = 1.12,
+    }) =>
+        GoogleFonts.sora(
+          textStyle: s,
+          fontSize: size,
+          fontWeight: weight,
+          letterSpacing: tracking,
+          height: height,
+        );
+
+    return inter.copyWith(
+      // Display & headline — Sora, the engineered voice of the logo. Page titles
+      // land on displaySmall; section titles on headlineSmall.
+      displayLarge: sora(inter.displayLarge, size: 40, weight: FontWeight.w800, tracking: -0.6, height: 1.02),
+      displayMedium: sora(inter.displayMedium, size: 34, weight: FontWeight.w800, tracking: -0.5, height: 1.04),
+      displaySmall: sora(inter.displaySmall, size: 30, weight: FontWeight.w800, tracking: -0.5, height: 1.06),
+      headlineLarge: sora(inter.headlineLarge, size: 26, weight: FontWeight.w700, tracking: -0.4, height: 1.1),
+      headlineMedium: sora(inter.headlineMedium, size: 22, weight: FontWeight.w700, tracking: -0.3, height: 1.15),
+      headlineSmall: sora(inter.headlineSmall, size: 19, weight: FontWeight.w700, tracking: -0.2, height: 1.2),
+      // Titles — Sora for app-bar and card headings.
+      titleLarge: sora(inter.titleLarge, size: 18, weight: FontWeight.w700, tracking: -0.1, height: 1.25),
+      titleMedium: sora(inter.titleMedium, size: 16, weight: FontWeight.w700, tracking: -0.05, height: 1.3),
+      // Body & data — Inter, tuned for comfortable reading line-heights.
+      bodyLarge: inter.bodyLarge?.copyWith(fontSize: 15.5, height: 1.5),
+      bodyMedium: inter.bodyMedium?.copyWith(fontSize: 14.5, height: 1.5),
+      bodySmall: inter.bodySmall?.copyWith(fontSize: 13, height: 1.45),
+      // Labels — buttons, chips, field labels (the eyebrow is tracked at usage).
+      labelLarge: inter.labelLarge?.copyWith(fontWeight: FontWeight.w600, letterSpacing: 0.2),
+      labelMedium: inter.labelMedium?.copyWith(fontWeight: FontWeight.w600),
+      labelSmall: inter.labelSmall?.copyWith(fontWeight: FontWeight.w600, letterSpacing: 0.5),
+    );
+  }
 
   static OutlineInputBorder _inputBorder(Color color, {double width = 1}) =>
       OutlineInputBorder(
