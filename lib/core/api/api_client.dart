@@ -32,6 +32,17 @@ class ApiClient {
   final Dio _dio;
   final TokenSource _tokens;
 
+  /// Fire-and-forget ping to wake a scaled-to-zero backend instance during app
+  /// launch (e.g. while the user is on the splash/login screen), so the first
+  /// real data screen doesn't pay a cold start. Never throws — best-effort only.
+  Future<void> warmUp() async {
+    try {
+      await _dio.get('/health');
+    } catch (_) {
+      // Ignore — this is purely an optimization.
+    }
+  }
+
   Future<dynamic> get(String path, {Map<String, dynamic>? query}) =>
       _send(() => _dio.get(path, queryParameters: query));
 

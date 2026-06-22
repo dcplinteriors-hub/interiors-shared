@@ -1,0 +1,27 @@
+name: shared-ci
+
+# The dcpl_shared package is a library — no deploy. But both apps build against
+# interiors-shared @ main, so keeping main green here protects both app pipelines.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: shared-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Analyze · Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.44.1
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - run: flutter analyze
+      - run: flutter test
