@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
 
-/// Asset paths for the official DCPL logo artwork (gradient wordmark on a
-/// transparent background — drops straight onto the dark theme).
+/// Asset paths for the official OneView logo artwork (the molten-gradient
+/// "DCPL · OneView" lock-up on a transparent background — drops straight onto
+/// the dark theme).
 class BrandAssets {
   BrandAssets._();
 
-  /// Wordmark only ("DCPL").
-  static const logo = 'packages/dcpl_shared/assets/branding/dcpl_logo.png';
+  /// The OneView lock-up. (A dedicated square mark will replace this in compact
+  /// spots once available.)
+  static const logo = 'packages/dcpl_shared/assets/branding/oneview_logo.png';
 
-  /// Wordmark + "Diverse Creation Private Limited" tagline — the full lock-up.
-  static const brand = 'packages/dcpl_shared/assets/branding/dcpl_brand.png';
+  /// The full OneView brand lock-up — used on the login & splash hero.
+  static const brand = 'packages/dcpl_shared/assets/branding/oneview_logo.png';
 }
 
-/// The DCPL brand logo — renders the official gradient artwork (PNG), never
+/// The OneView brand logo — renders the official gradient artwork (PNG), never
 /// text. [tagline] = false → the wordmark ([BrandAssets.logo]); true → the full
 /// lock-up with the company name ([BrandAssets.brand]).
 ///
@@ -32,7 +34,7 @@ class BrandWordmark extends StatelessWidget {
       height: height,
       fit: BoxFit.contain,
       filterQuality: FilterQuality.medium,
-      semanticLabel: 'DCPL',
+      semanticLabel: 'OneView',
     );
   }
 }
@@ -53,7 +55,7 @@ class BrandMark extends StatelessWidget {
         BrandAssets.logo,
         fit: BoxFit.contain,
         filterQuality: FilterQuality.medium,
-        semanticLabel: 'DCPL',
+        semanticLabel: 'OneView',
       ),
     );
   }
