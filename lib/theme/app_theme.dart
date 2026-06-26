@@ -45,16 +45,27 @@ abstract final class AppTheme {
         titleTextStyle: text.titleLarge,
       ),
 
-      // Outlined inputs — drafting-precise, 10px corners, brand (crimson) focus
-      // ring: the one place the Molten accent touches a form field.
+      // Outlined inputs — drafting-precise, 10px corners. The focus ring is a
+      // neutral light line (onSurface): the brand crimson read too close to the
+      // error red, so a focused field looked like an invalid one.
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: scheme.surfaceContainerLowest,
         border: _inputBorder(scheme.outlineVariant),
         enabledBorder: _inputBorder(scheme.outlineVariant),
-        focusedBorder: _inputBorder(scheme.tertiary, width: 1.6),
+        focusedBorder: _inputBorder(scheme.onSurface, width: 1.6),
         errorBorder: _inputBorder(scheme.error),
         focusedErrorBorder: _inputBorder(scheme.error, width: 1.6),
+        // Floating label tracks the focus ring: white (onSurface) on focus, muted
+        // when just resting above a filled field, error red when invalid.
+        floatingLabelStyle: WidgetStateTextStyle.resolveWith((states) {
+          final color = states.contains(WidgetState.error)
+              ? scheme.error
+              : states.contains(WidgetState.focused)
+              ? scheme.onSurface
+              : scheme.onSurfaceVariant;
+          return text.bodyLarge?.copyWith(color: color) ?? TextStyle(color: color);
+        }),
         isDense: true,
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 14,
