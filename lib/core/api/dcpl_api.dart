@@ -267,6 +267,28 @@ class MaterialRequestsApi {
     ),
   );
 
+  /// Admin corrects the supervisor-entered item fields (allowed only before a vendor is
+  /// assigned). Sends just the provided fields; the backend requires at least one.
+  Future<MaterialRequest> editItem(
+    String id, {
+    String? particular,
+    String? make,
+    String? size,
+    num? quantity,
+    String? unit,
+  }) async => _one(
+    await _api.patch(
+      '/material-requests/$id',
+      body: {
+        'particular': ?particular,
+        'make': ?make,
+        'size': ?size,
+        'quantity': ?quantity,
+        'unit': ?unit,
+      },
+    ),
+  );
+
   // Supervisor transitions.
   Future<MaterialRequest> cancel(String id) async =>
       _one(await _api.post('/material-requests/$id/cancel'));
