@@ -189,6 +189,7 @@ class MaterialRequestsApi {
     MaterialRequestStatus? status,
     String? workOrder,
     String? project,
+    String? supervisor,
     int? limit,
     String? cursor,
   }) async => Page.fromJson(
@@ -201,6 +202,7 @@ class MaterialRequestsApi {
           'status': status?.wire,
           'workOrder': workOrder,
           'project': project,
+          'supervisor': supervisor,
         },
       ),
     ),
