@@ -3,6 +3,7 @@
 library;
 
 export 'adaptive_nav_scaffold.dart';
+export 'audio_player_bar.dart';
 export 'branch_container.dart';
 export 'brand_kpi_card.dart';
 export 'brand_logo.dart';
