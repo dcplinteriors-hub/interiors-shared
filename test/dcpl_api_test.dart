@@ -341,13 +341,13 @@ void main() {
       await api.materialRequests.assignVendor(
         'mr1',
         expectedDate: '2026-06-20',
-        vendor: 'V Co',
+        vendorId: 'v1',
         poNumber: 'PO-1',
       );
       expect(adapter.last!.path, '/material-requests/mr1/assign-vendor');
       expect(adapter.capturedBody, {
         'expectedDate': '2026-06-20',
-        'vendor': 'V Co',
+        'vendorId': 'v1',
         'poNumber': 'PO-1',
       });
     });

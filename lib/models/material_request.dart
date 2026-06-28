@@ -54,6 +54,7 @@ class MaterialRequest {
     this.supervisorId,
     this.attachments = const Attachments(),
     this.expectedDate,
+    this.vendorId,
     this.vendor,
     this.poNumber,
     this.remarks,
@@ -87,6 +88,7 @@ class MaterialRequest {
           json['attachments'] as Map<String, dynamic>?,
         ),
         expectedDate: json['expectedDate'] as String?,
+        vendorId: json['vendorId'] as String?,
         vendor: json['vendor'] as String?,
         poNumber: json['poNumber'] as String?,
         remarks: json['remarks'] as String?,
@@ -129,6 +131,11 @@ class MaterialRequest {
 
   // Admin, when assigning the vendor / on decline.
   final String? expectedDate;
+
+  /// id of the assigned vendor (the managed `vendors` list); null on legacy items.
+  final String? vendorId;
+
+  /// Snapshot of the vendor's name at assignment (also the only vendor info on legacy items).
   final String? vendor;
 
   /// Optional, plain manual PO reference the admin types when assigning the vendor.

@@ -12,6 +12,7 @@ class DcplApi {
       projects = ProjectsApi(client),
       workOrders = WorkOrdersApi(client),
       materialRequests = MaterialRequestsApi(client),
+      vendors = VendorsApi(client),
       uploads = UploadsApi(client);
 
   final MeApi me;
@@ -19,6 +20,7 @@ class DcplApi {
   final ProjectsApi projects;
   final WorkOrdersApi workOrders;
   final MaterialRequestsApi materialRequests;
+  final VendorsApi vendors;
   final UploadsApi uploads;
 }
 
@@ -64,6 +66,50 @@ class SupervisorsApi {
       query: _query(limit: limit, cursor: cursor),
     ),
     User.fromJson,
+  );
+}
+
+/// `/vendors` (admin) — a supplier directory. `phone`/`email` are supported but the current admin
+/// form only sends the name.
+class VendorsApi {
+  const VendorsApi(this._api);
+  final ApiClient _api;
+
+  Future<Vendor> create({
+    required String name,
+    String? phone,
+    String? email,
+  }) async => Vendor.fromJson(
+    await _api.post(
+          '/vendors',
+          body: {'name': name, 'phone': ?phone, 'email': ?email},
+        )
+        as Map<String, dynamic>,
+  );
+
+  Future<Page<Vendor>> list({int? limit, String? cursor}) async => Page.fromJson(
+    await _api.get('/vendors', query: _query(limit: limit, cursor: cursor)),
+    Vendor.fromJson,
+  );
+
+  /// Edit a vendor / toggle its active state. Only the provided fields are sent.
+  Future<Vendor> update(
+    String id, {
+    String? name,
+    String? phone,
+    String? email,
+    bool? isActive,
+  }) async => Vendor.fromJson(
+    await _api.patch(
+          '/vendors/$id',
+          body: {
+            'name': ?name,
+            'phone': ?phone,
+            'email': ?email,
+            'isActive': ?isActive,
+          },
+        )
+        as Map<String, dynamic>,
   );
 }
 
@@ -247,7 +293,7 @@ class MaterialRequestsApi {
   Future<MaterialRequest> assignVendor(
     String id, {
     required String expectedDate,
-    required String vendor,
+    required String vendorId,
     String? poNumber,
     String? remarks,
   }) async => _one(
@@ -255,7 +301,7 @@ class MaterialRequestsApi {
       '/material-requests/$id/assign-vendor',
       body: {
         'expectedDate': expectedDate,
-        'vendor': vendor,
+        'vendorId': vendorId,
         if (poNumber != null && poNumber.isNotEmpty) 'poNumber': poNumber,
         if (remarks != null && remarks.isNotEmpty) 'remarks': remarks,
       },
